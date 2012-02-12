@@ -3,6 +3,7 @@
 %{
 #include <stdio.h>
 #include "sread.h"
+#include "sreadnode.h"
 #include "sread.tab.h"
 #include "sread.lex.h"
 
@@ -26,95 +27,115 @@ int sread_wrap()
 %}
 
 %token	OPEN_BRACE CLOSE_BRACE
-//%token	QUOTE
 
+%union
+{
+	long int	num;
+	char	*str;
+	struct sread_node_t	*node;
+	struct sread_node_param_t	*param;
+}
 
-//%union
-//{
-//	int number;
-//	char *str;
-//}
+%token	<str>	NAME
+%token	<num>	NUM_INT
+%token	<num>	NUM_HEX
+%token	<str>	STRING
 
-//%token <str> NAME
-//%token <str> STRING
-
-
-
-//%token	KEYWORD_main
-//%token	KEYWORD_general
-//%token	KEYWORD_zoom
-
+/*
 %token	NAME
+%token	NUM_INT
+%token	NUM_HEX
 %token	STRING
+*/
+
+%type	<node>	sexp
+%type	<node>	sexps
+%type	<param>	sexp_param
+%type	<param>	sexp_params
+
+%start	sexproot
 
 %%
 
+sexproot:
+	{
+		printf("Root-start\n");
+	}
+	sexps
+	{
+		printf("Root-end\n");
+	}
+
 sexps:
-	sexp
+	{}
 	|
 	sexps
 	sexp
+	{
+//		printf("SEXP+\n" );
+		$$ = $1;
+		sread_node_dump( $2 );
+		printf( "\n" );
+//		$$ = sread_node_param_add( $1, $2 );
+//		printf("SEXP-\n" );
+	}
 	;
 
 sexp:
-	OPEN_BRACE
+	OPEN_BRACE NAME sexp_params CLOSE_BRACE
 	{
-//		printf("Section-s\n");
-	}
-	NAME
-	{
-//		printf("Section-n\n");
-	}
-	sexp_params
-	{
-//		printf("Section-m\n");
-	}
-	CLOSE_BRACE
-	{
-//		printf("Section-e\n");
+//		printf("Section-n[%s]+\n", $2 );
+		$$ = sread_node_init( $2, $3 );
+//		printf("Section-n[%s]-\n", $2 );
 	}
 	;
 
 sexp_params:
 	sexp_param
+	{
+		$$ = $1;
+	}
 	|
-	sexp_params
 	sexp_param
+	sexp_params
+	{
+		$$ = sread_node_param_next( $1, $2 );
+	}
 	;
 
 sexp_param:
+	{
+//		printf("Prm-empty[%s]\n", "empty");
+		$$ = sread_node_param_add_empty( );
+	}
+	|
 	NAME
 	{
-//		printf("Prm-n[%s]\n", "1");
+//		printf("Prm-name[%s]\n", $1 );
+		$$ = sread_node_param_add_name( $1 );
 	}
 	|
-//	quoted_name
-//	{
-//		printf("Prm-q\n");
-//	}
-//	|
+	NUM_INT
+	{
+//		printf("Prm-num-int[%ld]\n", $1 );
+		$$ = sread_node_param_add_number( $1 );
+	}
+	|
+	NUM_HEX
+	{
+//		printf("Prm-num-hex[%04lx]\n", $1 );
+		$$ = sread_node_param_add_number( $1 );
+	}
+	|
 	STRING
 	{
-//		printf("Prm-t[%s]\n", "1");
+//		printf("Prm-str[%s]\n", $1 );
+		$$ = sread_node_param_add_string( $1 );
 	}
 	|
-	sexps
+	sexp
 	{
 //		printf("Prm-s\n");
+		$$ = sread_node_param_add_node( $1 );
 	}
 	;
-
-//sexp_name:
-//	quoted_name
-//	{
-//		printf("S-name\n");
-//	}
-//	;
-/*
-quoted_name:
-	QUOTE NAME QUOTE
-	{
-		printf("Q-name\n");
-	}
-	;
-*/

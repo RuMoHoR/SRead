@@ -1,0 +1,16 @@
+(root "Test"
+	(file ping "P1")
+	(file pong 836)
+	(test
+		(if "T1")
+		(if 0x75 134 0x123)
+		167
+	)
+	x 10
+	(bump)
+)
+
+(more s rec-s)
+
+(and (even) more)
+

@@ -4,6 +4,7 @@ all:	$(NAME)
 
 OBJ	= \
 	main.o \
+	sreadnode.o \
 	sread.lex.o \
 	sread.tab.o
 
@@ -24,18 +25,24 @@ CFLAGS	= \
 SREAD	= sread.lex.c sread.lex.h sread.tab.c sread.tab.h
 
 
-.SUFFIXES:  .c, .l, .y 
+.SUFFIXES:  .c, .l, .y
 
-LIBS	= 
+LIBS	=
 
 .c.o:
 	gcc $(CFLAGS) -c $< -o $@
 
-sread.lex.c sread.lex.h: sread.l sread.tab.h
-	lex --bison-locations --yylineno --prefix=sread_ --8bit \
-		--outfile=sread.lex.c --header-file=sread.lex.h $<
+sread.lex.c sread.lex.h: sread.l sread.tab.h sreadnode.h
+	lex \
+		--8bit \
+		--bison-locations \
+		--yylineno \
+		--prefix=sread_ \
+		--outfile=sread.lex.c \
+		--header-file=sread.lex.h \
+		$<
 
-sread.tab.c sread.tab.h: sread.y
+sread.tab.c sread.tab.h: sread.y sreadnode.h
 	yacc -Wall -Werror --locations --name-prefix=sread_ \
 		--output=sread.tab.c --defines=sread.tab.h $<
 
@@ -44,8 +51,9 @@ sread.tab.c sread.tab.h: sread.y
 
 # -r all
 
-sread.lex.o: sread.lex.c
-sread.tab.o: sread.tab.c sread.tab.h
+sread.lex.o: sread.lex.c sreadnode.h
+sread.tab.o: sread.tab.c sread.tab.h sreadnode.h
+sreadnode.o: sreadnode.c sreadnode.h
 main.o:	main.c sread.lex.h sread.tab.h
 
 $(NAME): $(OBJ)
@@ -55,6 +63,6 @@ clean:
 	rm -f $(NAME) $(OBJ) $(SREAD)
 
 tst:	$(NAME)
-	./$(NAME) test/prj.srec
+	./$(NAME) test/tst.srec
 
 #	./$(NAME) test/test.srec
