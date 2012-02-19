@@ -136,6 +136,24 @@ sread_node_param_add_number(
 }
 
 struct sread_node_param_t *
+sread_node_param_add_float(
+	const float decimal )
+{
+	struct sread_node_param_t *param;
+
+//	printf( "Node-Add-Num[%ld]\n", number );
+
+	param = sread_node_param_alloc();
+	if ( param ) {
+		param->type = SREAD_NODEPARAM_TYPE_FLOAT;
+		param->value.decimal = decimal;
+	} /* alloc ok? */
+
+//	printf( "Node-Param-AddedI[%p]\n", param );
+	return param;
+}
+
+struct sread_node_param_t *
 sread_node_param_add_string(
 	const char * const str )
 {
@@ -179,6 +197,10 @@ sread_node_dump_param(
 
 	case SREAD_NODEPARAM_TYPE_NUMBER:
 		printf( " %ld", param->value.number );
+		break;
+
+	case SREAD_NODEPARAM_TYPE_FLOAT:
+		printf( " %.4f", param->value.decimal );
 		break;
 
 	case SREAD_NODEPARAM_TYPE_STRING:

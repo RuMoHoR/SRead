@@ -6,6 +6,7 @@ enum sread_node_param_type_t {
 	SREAD_NODEPARAM_TYPE_NODE,
 	SREAD_NODEPARAM_TYPE_NAME,
 	SREAD_NODEPARAM_TYPE_NUMBER,
+	SREAD_NODEPARAM_TYPE_FLOAT,
 	SREAD_NODEPARAM_TYPE_STRING
 };
 
@@ -17,6 +18,7 @@ struct sread_node_param_t {
 		struct sread_node_t	*node;
 		char	*name;
 		long int	number;
+		float	decimal;
 		char	*str;
 	} value;
 	struct sread_node_param_t	*next;
@@ -60,6 +62,10 @@ sread_node_param_add_name(
 struct sread_node_param_t *
 sread_node_param_add_number(
 	const long int number );
+
+struct sread_node_param_t *
+sread_node_param_add_float(
+	const float decimal );
 
 struct sread_node_param_t *
 sread_node_param_add_string(

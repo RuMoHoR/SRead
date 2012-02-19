@@ -31,6 +31,7 @@ int sread_wrap()
 %union
 {
 	long int	num;
+	float	dec;
 	char	*str;
 	struct sread_node_t	*node;
 	struct sread_node_param_t	*param;
@@ -39,6 +40,7 @@ int sread_wrap()
 %token	<str>	NAME
 %token	<num>	NUM_INT
 %token	<num>	NUM_HEX
+%token	<dec>	NUM_FLOAT
 %token	<str>	STRING
 
 /*
@@ -125,6 +127,12 @@ sexp_param:
 	{
 //		printf("Prm-num-hex[%04lx]\n", $1 );
 		$$ = sread_node_param_add_number( $1 );
+	}
+	|
+	NUM_FLOAT
+	{
+//		printf("Prm-num-float[%8.4f]\n", $1 );
+		$$ = sread_node_param_add_float( $1 );
 	}
 	|
 	STRING

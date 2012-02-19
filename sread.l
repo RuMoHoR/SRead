@@ -30,6 +30,12 @@
 				return STRING;
 			}
 
+-?[0-9]*\.[0-9]+	{
+//				printf("FLOAT[%s]\n", yytext);
+				yylval->dec = atof(yytext);
+				return NUM_FLOAT;
+			}
+
 [0-9]+			{
 //				printf("INT[%s]\n", yytext);
 				yylval->num = atoi(yytext);
@@ -42,12 +48,13 @@
 				return NUM_HEX;
 			}
 
-[a-zA-Z][a-zA-Z0-9-]*	{
+[a-zA-Z][a-zA-Z0-9_-]*	{
 //				printf("NAM[%s]\n", yytext);
 				yylval->str = strdup( yytext );
 				return NAME;
 			}
 
+\r			/* ignore end of line */;
 \n			/* ignore end of line */;
 [ \t]+			/* ignore whitespace */;
 
