@@ -7,10 +7,22 @@
 		167
 	)
 	x 10
+	/* comment */
 	(bump)
 )
 
 (more s rec-s)
 
-(and (even) more)
+/*****
+ Hello
+*****/
 
+(and (even /* maybe */) more)
+
+(string "Test")
+(string "Test \"str\"!")
+(string "Test\x41\
+\x42")
+(string "Test /* in
+ner */ comment")
+(string "Te\nst")
